@@ -58,57 +58,75 @@ public class Labirinto {
 
     // Explora uma região usando BFS e retorna seu tamanho
     private int exploraRegiao(int x, int y) {
-        Queue<int[]> fila = new LinkedList<>();
-        fila.add(new int[]{x, y});
+        if (!isValido(x, y) || visitados[x][y]) {
+            return 0;
+        }
+
         visitados[x][y] = true;
-        int tamanho = 0;
+        int tamanho = 1;
 
-        while (!fila.isEmpty()) {
-            int[] atual = fila.poll();
-            int i = atual[0], j = atual[1];
-            tamanho++;
+        String paredes = converteHexParaBinario(matriz[x][y]);
+        int[][] direcoes = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
 
-            String paredes = converteHexParaBinario(matriz[i][j]);
-            int[][] direcoes = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
-
-            for (int d = 0; d < 4; d++) {
-                int novoX = i + direcoes[d][0];
-                int novoY = j + direcoes[d][1];
-                if (isValido(novoX, novoY) && !visitados[novoX][novoY] && paredes.charAt(d) == '0') {
-                    fila.add(new int[]{novoX, novoY});
-                    visitados[novoX][novoY] = true;
-                }
+        for (int d = 0; d < 4; d++) {
+            int novoX = x + direcoes[d][0];
+            int novoY = y + direcoes[d][1];
+            if (isValido(novoX, novoY) && !visitados[novoX][novoY] && paredes.charAt(d) == '0') {
+                tamanho += exploraRegiao(novoX, novoY);
             }
         }
 
         return tamanho;
     }
 
+
     // Encontra o ser mais frequente no labirinto
     public String serMaisFrequente() {
-        Map<String, Integer> frequencias = new HashMap<>();
+        List<String> elementos = new ArrayList<>(); // Lista para armazenar elementos distintos
+        List<Integer> frequencias = new ArrayList<>(); // Lista para armazenar suas contagens
 
         for (int i = 0; i < linhas; i++) {
             for (int j = 0; j < colunas; j++) {
                 String conteudo = matriz[i][j];
-                if (Character.isUpperCase(conteudo.charAt(0))) {
-                    frequencias.put(conteudo, frequencias.getOrDefault(conteudo, 0) + 1);
+                if (conteudo != null && !conteudo.isEmpty() && Character.isUpperCase(conteudo.charAt(0))) {
+                    int indice = elementos.indexOf(conteudo);
+                    if (indice == -1) {
+                        elementos.add(conteudo);
+                        frequencias.add(1);
+                    } else {
+                        frequencias.set(indice, frequencias.get(indice) + 1);
+                    }
                 }
             }
         }
 
-        return frequencias.entrySet()
-                .stream()
-                .max(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey)
-                .orElse("Nenhum");
+        // Determinar o elemento mais frequente
+        String maisFrequente = "Nenhum";
+        int maiorFrequencia = 0;
+
+        for (int i = 0; i < elementos.size(); i++) {
+            if (frequencias.get(i) > maiorFrequencia) {
+                maiorFrequencia = frequencias.get(i);
+                maisFrequente = elementos.get(i);
+            }
+        }
+
+        return maisFrequente;
     }
 
+
     // Converte hexadecimal para binário
-    private String converteHexParaBinario(String hex) {
-        int valor = Integer.parseInt(hex, 16);
-        return String.format("%4s", Integer.toBinaryString(valor)).replace(' ', '0');
+    private String converteHexParaBinario(String hexadecimal) {
+        int valor = Integer.parseInt(hexadecimal, 16);
+        String binario = Integer.toBinaryString(valor);
+
+        while (binario.length() < 4) {
+            binario = "0" + binario;
+        }
+
+        return binario;
     }
+
 
     // Verifica se a célula é válida
     private boolean isValido(int x, int y) {
