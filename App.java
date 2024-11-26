@@ -23,24 +23,19 @@ public class App {
         String arquivo = in.nextLine();
         String caminhoArquivo = "testes-t10/" + arquivo;
 
-        try {
-            Labirinto labirinto = new Labirinto(caminhoArquivo);
+        Labirinto labirinto = new Labirinto(caminhoArquivo);
 
-            labirinto.imprimeLabirinto();
+        labirinto.imprimeLabirinto();
 
-            int regioes = labirinto.contarRegioes();
-            String serFrequente = labirinto.serMaisFrequente();
+        int regioes = labirinto.contarRegioes();
+        String serFrequente = labirinto.serMaisFrequente();
 
-            System.out.println("\n--------------------------------");
-            System.out.println("Resultados para o arquivo: " + arquivo);
-            System.out.println("Número de regiões isoladas: " + regioes);
-            System.out.println("Ser mais frequente: " + serFrequente);
-            System.out.println("--------------------------------");
+        System.out.println("\n--------------------------------");
+        System.out.println("Resultados para o arquivo: " + arquivo);
+        System.out.println("Número de regiões isoladas: " + regioes);
+        System.out.println("Ser mais frequente: " + serFrequente);
+        System.out.println("--------------------------------");
 
-        } catch (Exception e) {
-            System.err.println("Erro ao processar o arquivo: " + arquivo);
-            System.err.println("Detalhes do erro: " + e.getMessage());
-        }
 
         in.close();
     }
